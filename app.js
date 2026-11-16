@@ -127,27 +127,53 @@ renderChips(); renderGrid();
 /* =====================================================================
    TAB STORYBOARD & SKRIP
    ===================================================================== */
-const DEFAULT_BLUEPRINT = `(Blueprint sementara — ganti dengan blueprint video kau sendiri)
+const DEFAULT_BLUEPRINT = `BLUEPRINT: "Spec Kontras → Bukti Angka → Promo" (±35 saat, POV tangan, tak tunjuk muka)
+Rujukan: video powerbank 10,000mAh dalam kereta.
 
-1. HOOK (0-3s)
-   - Ayat pertama mesti stop scroll. Tunjuk produk / reaksi terkejut.
-2. MASALAH (3-8s)
-   - Sebut pain point penonton yang relate.
-3. PERKENALKAN PRODUK (8-13s)
-   - "Sebab tu aku guna ..." — tunjuk produk dekat dengan kamera.
-4. DEMO / BUKTI (13-22s)
-   - Cara guna, before/after, tekstur, close-up.
-5. KELEBIHAN UTAMA (22-27s)
-   - 2-3 kelebihan paling kuat + harga/promo.
-6. CTA (27-30s)
-   - "Tekan beg kuning sekarang sebelum stok habis."`;
+GAYA KESELURUHAN
+- Shot POV tangan je (tak tunjuk muka), setting ikut tempat produk digunakan (cth dalam kereta).
+- Setiap shot pendek 1.5–2 saat, tukar angle kerap. Kadang-kadang flash background warna terang (merah/oren) untuk transition.
+- Caption SATU PERKATAAN sekali, huruf besar bold putih, tengah bawah skrin, ikut voiceover.
+- Motion graphic angka/spec (mAh, mm, %, watt) muncul atas produk.
+- Voiceover santai macam cakap dengan kawan, ±2.5 patah perkataan sesaat.
+
+1. HOOK KONTRAS SPEC (0–3s)
+   Formula: "Bukan [A], bukan [B], tapi [spec sebenar] dengan [kelebihan yang mengejutkan]."
+   Cth: "Bukan 20 ribu, bukan 30 ribu, tapi 10 ribu mAh dengan saiz yang kecil, ringan je."
+   Visual: produk dalam tangan + angka spec beranimasi keliling produk.
+
+2. APA YANG KAU DAPAT / FEATURE (3–10s)
+   Senaraikan 2–3 feature fizikal, satu shot satu feature.
+   Cth: "Dia ada dua kabel siap — satu Type-C, satu Lightning."
+   Visual: produk atas tapak tangan + garis ukuran (mm); close-up tarik setiap kabel/bahagian.
+
+3. BUKTI DENGAN ANGKA SEBENAR (10–18s)
+   Formula: "Aku [guna/test] [produk] dari [angka] sampai [angka] dalam [masa] je." + reaksi ringkas.
+   Cth: "Powerbank ni fast charging tahu. Aku charge iPhone 13 aku daripada 20 sampai 90 persen dalam sejam je. Okey ah, not bad."
+   Visual: demo sebenar + overlay angka (watt, % sebelum → selepas).
+
+4. USE CASE / GAYA HIDUP (18–26s)
+   Formula: "Saiz [kelebihan], nak letak/guna dalam [tempat 1] boleh, dalam [tempat 2] pun boleh, takde masalah."
+   Visual: masukkan produk dalam beg, letak dalam kereta, guna dalam situasi sebenar.
+
+5. POSITIONING / BANDING (26–30s)
+   Formula: "[Produk] ni sesuai sangat untuk [peranan] kalau malas nak [masalah dengan alternatif] macam ni."
+   Visual: pegang produk alternatif yang besar/leceh sebagai perbandingan.
+
+6. HARGA + PROMO (30–34s)
+   Formula: "Harga murah, tapi sekarang ada promo [nama promo] lagi murah."
+   Visual: poster/kad promo muncul atas produk.
+
+7. CTA (34–36s)
+   "So kalau korang berminat, tekan kuning bawah."
+   Visual: tangan tunjuk ke bawah / letak produk, shot penutup.`;
 
 const bpEl = $("#blueprint");
-bpEl.value = store.get("blueprint", DEFAULT_BLUEPRINT);
-bpEl.addEventListener("input", () => store.set("blueprint", bpEl.value));
+bpEl.value = store.get("blueprint_v2", DEFAULT_BLUEPRINT);
+bpEl.addEventListener("input", () => store.set("blueprint_v2", bpEl.value));
 $("#bp-reset").addEventListener("click", () => {
   if (!confirm("Reset blueprint ke versi asal?")) return;
-  bpEl.value = DEFAULT_BLUEPRINT; store.set("blueprint", DEFAULT_BLUEPRINT);
+  bpEl.value = DEFAULT_BLUEPRINT; store.set("blueprint_v2", DEFAULT_BLUEPRINT);
 });
 
 $("#apikey").value = store.get("apikey", "");
@@ -167,7 +193,11 @@ Peraturan penulisan:
 - Bahasa Melayu santai gaya Malaysia (boleh campur sikit English macam orang Malaysia cakap), ayat pendek, senang disebut depan kamera.
 - Jangan buat dakwaan palsu atau melampau (contoh dakwaan perubatan "menyembuhkan"). Guna fakta dari research; kalau tak pasti, tulis secara umum.
 - Setiap babak: masa, visual/shot (apa nak rakam), skrip voiceover (apa nak cakap), teks atas skrin, dan nota ringkas (props/transition/tips).
-- Jumlah masa babak mesti padan dengan durasi video yang diminta.
+- Jumlah masa babak mesti padan dengan durasi video yang diminta. Kalau durasi lain dari blueprint, kekalkan susunan babak dan skala masa ikut nisbah.
+- Ikut GAYA KESELURUHAN dalam blueprint (jenis shot, caption, motion graphic) bila tulis visual & nota.
+- Contoh ayat dalam blueprint hanya rujukan formula — tulis ayat baru untuk produk ini, jangan salin bulat-bulat.
+- Panjang skrip voiceover lebih kurang 2.5 patah perkataan sesaat supaya muat dengan durasi.
+- Bahagian "teks_skrin" = angka/spec atau overlay grafik (cth "10,000mAh", "20% → 90%"), bukan caption perkataan.
 
 Selepas research, jawapan AKHIR kau mesti JSON sahaja (tiada teks lain, tiada markdown fence), ikut bentuk ini:
 {
