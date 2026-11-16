@@ -14,7 +14,7 @@ Guna langganan Claude kau sendiri:
 Edit **📐 Blueprint video** ikut struktur video kau (disimpan automatik). Blueprint default diambil dari video rujukan powerbank.
 
 ## Versi claude.ai
-`python3 tools/build-artifact.py` jana `build/artifact.html`; publish bersama `app.js`, `hooks.js`, `style.css`, dengan capability `sample`.
+`python3 tools/build-artifact.py` jana `build/artifact.html`; publish bersama `app.js`, `hooks.js`, `frames.js`, `style.css`, dengan capability `sample`.
 
 ## Tambah / edit hook
 Edit array dalam `hooks.js`. Kiraan dalam chip dikemas kini sendiri.

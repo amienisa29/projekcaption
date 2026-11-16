@@ -1,9 +1,9 @@
 // Cache fail app supaya buka laju & tetap jalan bila line lemah.
 // Naikkan VERSION setiap kali fail app berubah.
-const VERSION = "v4";
+const VERSION = "v5";
 const CACHE = `hookaffiliate-${VERSION}`;
 const SHELL = [
-  "./", "index.html", "style.css", "app.js", "hooks.js", "manifest.webmanifest",
+  "./", "index.html", "style.css", "app.js", "hooks.js", "frames.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png",
 ];
 

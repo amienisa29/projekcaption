@@ -1,4 +1,5 @@
 import { CATEGORIES, HOOKS } from "./hooks.js";
+import { frameSVG, shotOf, SHOTS } from "./frames.js";
 
 /* ---------- storage helpers (selamat walaupun storage disekat) ---------- */
 const store = {
@@ -204,7 +205,8 @@ Peraturan penulisan:
 - Ikut GAYA KESELURUHAN dalam blueprint (jenis shot, caption, motion graphic) bila tulis visual & nota.
 - Contoh ayat dalam blueprint hanya rujukan formula — tulis ayat baru untuk produk ini, jangan salin bulat-bulat.
 - Panjang skrip voiceover lebih kurang 2.5 patah perkataan sesaat supaya muat dengan durasi.
-- Bahagian "teks_skrin" = angka/spec atau overlay grafik (cth "10,000mAh", "20% → 90%"), bukan caption perkataan.
+- Bahagian "teks_skrin" = angka/spec atau overlay grafik pendek, maksimum 16 aksara (cth "10,000mAh", "20% → 90%"), bukan caption perkataan.
+- Bahagian "shot" = satu daripada: pov_tangan, close_up, atas_meja, dalam_kereta, muka, banding, demo, promo, cta.
 
 Jawapan kau mesti JSON sahaja (tiada teks lain, tiada markdown fence), ikut bentuk ini:
 {
@@ -218,7 +220,7 @@ Jawapan kau mesti JSON sahaja (tiada teks lain, tiada markdown fence), ikut bent
   },
   "hook_pilihan": ["3 hingga 5 hook alternatif"],
   "storyboard": [
-    { "babak": "nama babak ikut blueprint", "masa": "0-3s", "visual": "...", "skrip": "...", "teks_skrin": "...", "nota": "..." }
+    { "babak": "nama babak ikut blueprint", "masa": "0-3s", "shot": "pov_tangan", "visual": "...", "skrip": "...", "teks_skrin": "...", "nota": "..." }
   ],
   "skrip_penuh": "skrip voiceover penuh dari awal sampai akhir, satu perenggan per babak",
   "caption": "caption TikTok siap copy",
@@ -328,7 +330,7 @@ function scriptAsText(e) {
   const lines = [`🎬 STORYBOARD: ${d.produk || e.product}`, ""];
   (d.storyboard || []).forEach((s, i) => {
     lines.push(`BABAK ${i + 1}: ${s.babak} (${s.masa})`);
-    lines.push(`🎥 Visual: ${s.visual}`);
+    lines.push(`🎥 Shot: ${SHOTS[shotOf(s)]} — ${s.visual}`);
     lines.push(`🗣️ Skrip: ${s.skrip}`);
     if (s.teks_skrin) lines.push(`🔤 Teks skrin: ${s.teks_skrin}`);
     if (s.nota) lines.push(`📝 Nota: ${s.nota}`);
@@ -376,10 +378,14 @@ function renderResult(e) {
           ${(d.storyboard || []).map((s, i) => `
             <div class="scene">
               <div class="scene-top"><b>${i + 1}. ${esc(s.babak)}</b><span class="pill">⏱ ${esc(s.masa)}</span></div>
+              <div class="scene-body">
+              ${frameSVG(s, i)}
+              <div class="scene-text">
               <div class="scene-row"><span>🎥 Visual</span><br>${esc(s.visual)}</div>
               <div class="scene-row"><span>🗣️ Skrip</span><div class="vo">${esc(s.skrip)}</div></div>
               ${s.teks_skrin ? `<div class="scene-row"><span>🔤 Teks skrin</span><br>${esc(s.teks_skrin)}</div>` : ""}
               ${s.nota ? `<div class="scene-row"><span>📝 Nota</span><br>${esc(s.nota)}</div>` : ""}
+              </div></div>
             </div>`).join("")}
         </div>
       </div>
