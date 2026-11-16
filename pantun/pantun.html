@@ -181,7 +181,7 @@ input:focus, textarea:focus { border-color: var(--rose); }
   <section id="tab-pickup" class="tabpage" hidden>
     <div class="panel">
       <h2>Skrip pick up line</h2>
-      <p class="small">Pembuka ikut tema produk → ajak komen → setup → punchline main kata.</p>
+      <p class="small">Cerita yang mengalir → punchline main kata → bawa ke produk. Tiga skrip, tiga jalan cerita berbeza.</p>
       <div class="field">
         <label for="u-product">Tajuk produk</label>
         <input id="u-product" placeholder="Cth: Perfume Oud Malam 30ml" autocomplete="off">
@@ -298,24 +298,22 @@ Balas JSON sahaja dalam bentuk:
 {"skrip":[{"pembayang":["baris 1","baris 2"],"maksud":["baris 3","baris 4"],"jambatan":"...","cta":"..."}]}`;
   }
 
-  const PICKUP_EXAMPLE = `CONTOH (produk: mesin durian)
-Pembuka: Ada pula yang minta dekat saya, "Bang, buatlah pickup line pakai buah pula bang, kita nak dengar." Okey, boleh, saya cuba ya.
-Ajak komen: Saya nak korang komen dekat dalam video ni buah apa yang korang tak suka dan kenapa. Saya mula dulu ya.
-Setup: Sebab saya suka buah yang rasa dia manis-manis, jadi saya tak suka buah pelam. Sebab korang pun tahulah pelam tu dia rasa masam sikit kan.
-Punchline: Tapi saya suka je kalau pelam tu... pelamin indah kita berdua.`;
+  const PICKUP_EXAMPLE = `CONTOH RUJUKAN GAYA SAHAJA (produk: mesin durian) — JANGAN tiru struktur atau ayatnya:
+"Ada orang minta saya buat pickup line pakai buah. Saya suka buah yang manis-manis, jadi saya tak suka buah pelam, sebab pelam tu masam sikit. Tapi saya suka je kalau pelam tu... pelamin indah kita berdua."
+Yang nak diambil dari contoh ni cuma: cerita ringkas yang bersahaja, tema berkait dengan produk, dan punchline main kata yang manis.`;
 
   function pickupPrompt(product, notes) {
-    return `Kau content creator TikTok Affiliate Malaysia yang pandai buat pickup line main kata (pun). Tulis 3 skrip video pickup line untuk produk di bawah, IKUT STRUKTUR CONTOH:
+    return `Kau content creator TikTok Affiliate Malaysia yang pandai bercerita dan buat pickup line main kata (pun). Tulis 3 skrip video pickup line untuk produk di bawah.
 
-1. pembuka: kononnya follower minta "buatlah pickup line pakai [tema]" — tema mesti berkait rapat dengan produk atau dunia produk (cth mesin durian → buah). Sebut produk/tema secara semula jadi.
-2. ajak_komen: ajak penonton komen [benda dalam tema] apa yang mereka tak suka dan kenapa, kemudian "Saya mula dulu ya."
-3. setup: alasan logik kenapa tak suka satu benda dalam tema itu (sebab rasa/sifat dia), nada santai bersahaja.
-4. punchline: "Tapi saya suka je kalau [benda] tu..." diikuti PUN di mana nama benda itu bunyi macam / jadi permulaan perkataan romantik (cth pelam → pelamin indah kita berdua).
+SETIAP SKRIP ADA FLOW:
+1. cerita: 3-5 ayat cerita santai yang buat orang nak dengar sampai habis — situasi harian yang relatable dan berkait dengan produk atau dunia produk (cth: kisah masa guna produk, kejadian kat kedai, perbualan dengan kawan/mak/pasangan, pengalaman kelakar). Cerita mesti bina suspen dan bawa secara semula jadi ke pickup line, bukan terus lompat.
+2. punchline: pickup line main kata (pun) sebenar dalam bahasa Melayu yang manis — perkataan romantik yang betul-betul berbunyi atau bermula macam benda dalam cerita (macam pelam → pelamin). Semak sendiri; buang yang tak menjadi.
+3. penutup: 1-2 ayat yang kembalikan cerita kepada produk dengan bersahaja, ajak penonton dapatkan produk.
 
-PERATURAN PENTING:
-- Punchline mesti PUN SEBENAR dalam bahasa Melayu: perkataan romantik tu betul-betul bermula atau berbunyi macam nama benda tu. Semak sendiri sebelum tulis; buang yang tak menjadi.
+PERATURAN:
+- Ketiga-tiga skrip MESTI berbeza: jalan cerita lain, sudut lain (contoh satu cerita pengalaman sendiri, satu dialog dengan orang lain, satu luahan/monolog), benda dan pun lain. Jangan guna ayat pembuka yang sama.
+- JANGAN minta penonton komen.
 - Gaya orang dewasa yang bersahaja dan sweet, BUKAN gaya budak-budak atau lawak bodoh.
-- Ketiga-tiga skrip guna benda dan pun yang berbeza.
 - Jangan buat dakwaan palsu tentang produk.
 
 ${PICKUP_EXAMPLE}
@@ -323,7 +321,7 @@ ${PICKUP_EXAMPLE}
 PRODUK: ${product}
 INFO TAMBAHAN: ${notes || "(tiada)"}
 
-Balas JSON sahaja: {"skrip":[{"pembuka":"...","ajak_komen":"...","setup":"...","punchline":"..."}]}`;
+Balas JSON sahaja: {"skrip":[{"sudut":"label pendek sudut cerita","cerita":"...","punchline":"...","penutup":"..."}]}`;
   }
 
   /* ---------- teka-teki ---------- */
@@ -385,15 +383,14 @@ Balas JSON sahaja: {"skrip":[{"soalan":"...","jawapan":"...","kenapa_lawak":"...
       if (b) { const s = list[+b.dataset.copyPoem]; copy([...s.pembayang, ...s.maksud].join("\n")); }
     };
   }
-  function pickupText(s) { return [s.pembuka, s.ajak_komen, s.setup, s.punchline].join("\n\n"); }
+  function pickupText(s) { return [s.cerita, s.punchline, s.penutup].filter(Boolean).join("\n\n"); }
   function renderPickup(list) {
     $("#u-results").innerHTML = list.map((s, i) => `
       <article class="card">
-        <span class="no">Skrip ${i + 1}</span>
-        <div><div class="sect">Pembuka</div><p class="prose">${esc(s.pembuka)}</p></div>
-        <div><div class="sect">Ajak komen</div><p class="prose">${esc(s.ajak_komen)}</p></div>
-        <div><div class="sect">Setup</div><p class="prose">${esc(s.setup)}</p></div>
+        <span class="no">Skrip ${i + 1}${s.sudut ? " · " + esc(s.sudut) : ""}</span>
+        <div><div class="sect">Cerita</div><p class="prose">${esc(s.cerita)}</p></div>
         <div><div class="sect">Punchline</div><p class="line-big">${esc(s.punchline)}</p></div>
+        ${s.penutup ? `<div><div class="sect">Bawa ke produk</div><p class="prose cta">${esc(s.penutup)}</p></div>` : ""}
         <button class="btn main" type="button" data-i="${i}">Copy skrip</button>
       </article>`).join("");
     $("#u-results").onclick = (e) => { const b = e.target.closest("[data-i]"); if (b) copy(pickupText(list[+b.dataset.i])); };
@@ -500,7 +497,7 @@ Balas JSON sahaja: {"skrip":[{"soalan":"...","jawapan":"...","kenapa_lawak":"...
   });
 
   renderPantun(SAMPLE, "Contoh");
-  renderPickup([{ pembuka: "Ada pula yang minta dekat saya, \"Bang, buatlah pickup line pakai buah pula bang, kita nak dengar.\" Okey, boleh, saya cuba ya.", ajak_komen: "Saya nak korang komen dekat dalam video ni buah apa yang korang tak suka dan kenapa. Saya mula dulu ya.", setup: "Sebab saya suka buah yang rasa dia manis-manis, jadi saya tak suka buah pelam. Sebab korang pun tahulah pelam tu dia rasa masam sikit kan.", punchline: "Tapi saya suka je kalau pelam tu... pelamin indah kita berdua." }]);
+  renderPickup([{ sudut: "Contoh rujukan", cerita: "Ada orang minta saya buat pickup line pakai buah. Saya ni suka buah yang manis-manis, jadi saya tak suka buah pelam. Sebab korang pun tahulah pelam tu dia rasa masam sikit kan.", punchline: "Tapi saya suka je kalau pelam tu... pelamin indah kita berdua.", penutup: "" }]);
   renderTeka([
     { soalan: "Selain interview, overview, review, apa view yang ada lagi?", jawapan: "I love you.", kenapa_lawak: "", jambatan: "Contoh — tekan Karang untuk teka-teki ikut produk kau." },
     { soalan: "Kenapa bila chat dengan orang Perak kena tunggu lama?", jawapan: "Sebab diorang still typing.", kenapa_lawak: "Still typing bunyi macam Taiping, Perak.", jambatan: "Contoh — tekan Karang untuk teka-teki ikut produk kau." },
