@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HookAffiliate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="wrap">
+
+  <header class="card hero">
+    <div class="hero-top">
+      <span>👋 Selamat Datang, <b id="username">Cikguhafidz29</b></span>
+      <span class="premium">👑 Premium</span>
+    </div>
+    <h1><span class="gold">Hook</span>Affiliate</h1>
+    <p class="sub">Hook Affiliate siap copy &amp; paste<br>untuk content TikTok Affiliate.</p>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab active" data-tab="hooks" role="tab">🪝 Hook</button>
+    <button class="tab" data-tab="story" role="tab">🎬 Storyboard &amp; Skrip</button>
+  </nav>
+
+  <!-- ============ TAB HOOK ============ -->
+  <section id="tab-hooks" class="tab-panel">
+    <div class="card">
+      <input id="search" class="search" type="search" placeholder="🔍 Cari hook..." autocomplete="off">
+      <div id="chips" class="chips"></div>
+    </div>
+
+    <div class="card">
+      <div class="list-head">
+        <h2 id="list-title">🔥 Trending</h2>
+        <span id="list-count" class="muted">0 Hook</span>
+      </div>
+      <div id="grid" class="grid"></div>
+      <p id="empty" class="muted center hidden">Tiada hook dijumpai.</p>
+    </div>
+  </section>
+
+  <!-- ============ TAB STORYBOARD ============ -->
+  <section id="tab-story" class="tab-panel hidden">
+    <div class="card">
+      <h2>🎬 Jana Storyboard &amp; Skrip</h2>
+      <p class="muted small">Letak tajuk produk. AI akan buat research produk tu, lepas tu tulis skrip ikut blueprint video kau.</p>
+
+      <label class="lbl" for="product">Tajuk produk *</label>
+      <input id="product" class="input" placeholder="Cth: Serum Vitamin C Glow 30ml">
+
+      <label class="lbl" for="notes">Info tambahan (pilihan)</label>
+      <textarea id="notes" class="input" rows="3" placeholder="Harga, promo, link produk, target audience, kelebihan yang kau nak tonjolkan..."></textarea>
+
+      <div class="row2">
+        <div>
+          <label class="lbl" for="duration">Durasi video</label>
+          <select id="duration" class="input">
+            <option>15 saat</option>
+            <option selected>30 saat</option>
+            <option>45 saat</option>
+            <option>60 saat</option>
+          </select>
+        </div>
+        <div>
+          <label class="lbl" for="tone">Gaya bahasa</label>
+          <select id="tone" class="input">
+            <option selected>Santai Malaysia (slang)</option>
+            <option>Formal sikit</option>
+            <option>Kelakar / santai gila</option>
+            <option>Emosi / storytelling</option>
+          </select>
+        </div>
+      </div>
+
+      <details class="blueprint">
+        <summary>📐 Blueprint video <span class="muted small">(tekan untuk edit)</span></summary>
+        <p class="muted small">Tampal blueprint / contoh struktur video kau kat sini. AI akan ikut struktur ni. Disimpan automatik dalam browser.</p>
+        <textarea id="blueprint" class="input mono" rows="12"></textarea>
+        <button id="bp-reset" class="btn ghost small-btn" type="button">Reset ke blueprint asal</button>
+      </details>
+
+      <button id="generate" class="btn gold big" type="button">✨ Research &amp; Jana Skrip</button>
+      <p id="status" class="status hidden"></p>
+    </div>
+
+    <div id="result" class="hidden"></div>
+
+    <div class="card">
+      <details>
+        <summary>⚙️ Tetapan API</summary>
+        <p class="muted small">Fungsi research &amp; skrip guna Claude API (dengan web search). Masukkan API key dari console.anthropic.com. Key disimpan dalam browser kau sahaja.</p>
+        <label class="lbl" for="apikey">Anthropic API key</label>
+        <input id="apikey" class="input" type="password" placeholder="sk-ant-..." autocomplete="off">
+        <button id="save-key" class="btn ghost small-btn" type="button">Simpan key</button>
+      </details>
+    </div>
+
+    <div class="card">
+      <h2 class="h-small">🕘 Sejarah skrip</h2>
+      <div id="history" class="history"></div>
+    </div>
+  </section>
+
+  <div id="toast" class="toast"></div>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
