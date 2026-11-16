@@ -1,6 +1,6 @@
 # HookAffiliate
 
-Web app untuk content TikTok Affiliate. Fail statik sahaja — buka `index.html` melalui mana-mana web server (cth. GitHub Pages, Netlify, atau `python3 -m http.server`).
+Web app untuk content TikTok Affiliate. Boleh dipasang kat Home Screen Android (PWA).
 
 ## Tab
 - **🪝 Hook** — ratusan hook ikut kategori (Trending, Viral, Kesihatan, Skincare, Gadget, Makanan, Automotif, Pertanian, Perfume, Fashion). Cari, copy satu klik, tanda ❤️ favorite (disimpan dalam browser).
@@ -13,3 +13,8 @@ Web app untuk content TikTok Affiliate. Fail statik sahaja — buka `index.html`
 
 ## Tambah / edit hook
 Edit array dalam `hooks.js`. Kiraan dalam chip dikemas kini sendiri.
+
+## Buka kat fon (GitHub Pages)
+1. GitHub repo → **Settings → Pages** → Source: **Deploy from a branch** → pilih branch yang ada app ni, folder `/ (root)` → **Save**.
+2. Tunggu 1–2 minit, buka `https://amienisa29.github.io/projekcaption/` dalam Chrome Android.
+3. Tekan **📲 Pasang App** (atau menu ⋮ → *Add to Home screen*).

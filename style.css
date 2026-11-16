@@ -17,7 +17,7 @@ body {
   background: radial-gradient(circle at 50% 0%, #3a2f17 0%, var(--bg) 55%) fixed, var(--bg);
   min-height: 100vh;
 }
-.wrap { max-width: 520px; margin: 0 auto; padding: 16px 16px 60px; }
+.wrap { max-width: 520px; margin: 0 auto; padding: 0 16px calc(96px + env(safe-area-inset-bottom)); }
 .hidden { display: none !important; }
 .muted { color: var(--muted); }
 .small { font-size: 13px; }
@@ -31,19 +31,34 @@ body {
   margin-bottom: 16px;
   backdrop-filter: blur(6px);
 }
-.hero { text-align: center; }
-.hero-top { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; font-weight: 700; color: var(--gold); text-align: left; }
-.hero h1 { font-size: 40px; font-weight: 800; letter-spacing: -1px; margin: 26px 0 10px; }
 .gold { color: var(--gold); }
 .sub { color: #e0d9c8; margin: 0; line-height: 1.5; }
 
-.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-.tab {
-  font: inherit; font-weight: 700; font-size: 14px; color: var(--text);
-  background: var(--card-2); border: 1px solid var(--border); border-radius: 999px;
-  padding: 12px; cursor: pointer;
+/* app shell: top bar + bottom nav */
+.topbar {
+  position: sticky; top: 0; z-index: 5;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  padding: calc(12px + env(safe-area-inset-top)) 2px 12px;
+  background: linear-gradient(var(--bg) 75%, transparent);
 }
-.tab.active { background: linear-gradient(90deg, var(--gold), var(--gold-2)); color: #1c1606; border-color: transparent; }
+.brand { font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+.install { padding: 8px 14px; border-radius: 999px; font-size: 13px; }
+.install-help p { margin: 8px 0 0; line-height: 1.5; }
+.bottom-nav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(21, 18, 12, 0.96); border-top: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+}
+.tab {
+  font: inherit; font-weight: 700; font-size: 12.5px; color: var(--muted);
+  background: transparent; border: 0; border-radius: 16px;
+  padding: 6px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  max-width: 260px; width: 100%; justify-self: center;
+}
+.tab .ico { font-size: 22px; line-height: 1.2; }
+.tab.active { color: #1c1606; background: linear-gradient(90deg, var(--gold), var(--gold-2)); }
 
 .search, .input {
   width: 100%; font: inherit; color: var(--text);
@@ -55,11 +70,12 @@ textarea.input { resize: vertical; line-height: 1.45; }
 .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; }
 .search:focus, .input:focus { border-color: var(--gold); }
 
-.chips { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.chips { display: flex; gap: 8px; margin: 14px -22px 0; padding: 0 22px 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.chips::-webkit-scrollbar { display: none; }
 .chip {
   font: inherit; font-weight: 700; font-size: 13.5px; color: var(--text);
   background: rgba(30, 26, 20, 0.85); border: 1px solid var(--border); border-radius: 999px;
-  padding: 10px 8px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding: 9px 14px; cursor: pointer; white-space: nowrap; flex: 0 0 auto;
 }
 .chip.active { background: linear-gradient(90deg, var(--gold), var(--gold-2)); color: #1c1606; border-color: transparent; }
 
@@ -127,7 +143,7 @@ details summary { cursor: pointer; font-weight: 700; }
 .hist-item button { font-size: 12px; padding: 6px 10px; }
 
 .toast {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(80px);
+  position: fixed; left: 50%; bottom: calc(90px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(80px);
   background: var(--gold); color: #1c1606; font-weight: 700; padding: 10px 18px; border-radius: 999px;
   transition: transform .25s, opacity .25s; opacity: 0; pointer-events: none; z-index: 10;
 }
@@ -135,7 +151,7 @@ details summary { cursor: pointer; font-weight: 700; }
 
 @media (max-width: 380px) {
   .card { padding: 16px; }
-  .hero h1 { font-size: 34px; }
+  .chips { margin: 14px -16px 0; padding: 0 16px 4px; }
   .copy { font-size: 11.5px; }
   .fav { width: 40px; }
 }

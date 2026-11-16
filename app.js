@@ -39,6 +39,7 @@ document.querySelectorAll(".tab").forEach((btn) => {
     $("#tab-hooks").classList.toggle("hidden", btn.dataset.tab !== "hooks");
     $("#tab-story").classList.toggle("hidden", btn.dataset.tab !== "story");
     store.set("tab", btn.dataset.tab);
+    scrollTo({ top: 0 });
   });
 });
 if (store.get("tab", "hooks") === "story") document.querySelector('.tab[data-tab="story"]').click();
@@ -413,3 +414,21 @@ $("#history").addEventListener("click", (ev) => {
   if (del) { store.set("history", h.filter((x) => String(x.id) !== del.dataset.del)); renderHistory(); }
 });
 renderHistory();
+
+/* ---------- pasang ke home screen (PWA) ---------- */
+let deferredInstall = null;
+const isStandalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
+if (!isStandalone) $("#install").classList.remove("hidden");
+addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstall = e; });
+$("#install").addEventListener("click", async () => {
+  if (deferredInstall) {
+    deferredInstall.prompt();
+    const { outcome } = await deferredInstall.userChoice;
+    deferredInstall = null;
+    if (outcome === "accepted") $("#install").classList.add("hidden");
+  } else {
+    $("#install-help").classList.remove("hidden");
+  }
+});
+$("#install-help-close").addEventListener("click", () => $("#install-help").classList.add("hidden"));
+addEventListener("appinstalled", () => { $("#install").classList.add("hidden"); toast("✅ App dah dipasang!"); });

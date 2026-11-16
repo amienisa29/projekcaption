@@ -2,8 +2,16 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>HookAffiliate</title>
+<meta name="theme-color" content="#15120c">
+<meta name="description" content="Hook TikTok Affiliate siap copy & paste, dan penjana storyboard & skrip.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -11,18 +19,20 @@
 <body>
 <main class="wrap">
 
-  <header class="card hero">
-    <div class="hero-top">
-      <span>👋 Selamat Datang, <b id="username">Cikguhafidz29</b></span>
-      <span class="premium">👑 Premium</span>
-    </div>
-    <h1><span class="gold">Hook</span>Affiliate</h1>
-    <p class="sub">Hook Affiliate siap copy &amp; paste<br>untuk content TikTok Affiliate.</p>
+  <header class="topbar">
+    <div class="brand"><span class="gold">Hook</span>Affiliate</div>
+    <button id="install" class="btn gold install hidden" type="button">📲 Pasang App</button>
   </header>
 
-  <nav class="tabs" role="tablist">
-    <button class="tab active" data-tab="hooks" role="tab">🪝 Hook</button>
-    <button class="tab" data-tab="story" role="tab">🎬 Storyboard &amp; Skrip</button>
+  <section id="install-help" class="card install-help hidden">
+    <b>📲 Letak kat Home Screen</b>
+    <p class="small">Buka menu Chrome <b>⋮</b> (atas kanan) → tekan <b>"Add to Home screen"</b> / <b>"Install app"</b> → <b>Install</b>.</p>
+    <button id="install-help-close" class="btn ghost small-btn" type="button">Faham</button>
+  </section>
+
+  <nav class="bottom-nav" role="tablist">
+    <button class="tab active" data-tab="hooks" role="tab"><span class="ico">🪝</span>Hook</button>
+    <button class="tab" data-tab="story" role="tab"><span class="ico">🎬</span>Skrip</button>
   </nav>
 
   <!-- ============ TAB HOOK ============ -->
@@ -108,5 +118,8 @@
   <div id="toast" class="toast"></div>
 </main>
 <script type="module" src="app.js"></script>
+<script>
+  if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+</script>
 </body>
 </html>
