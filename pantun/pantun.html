@@ -44,7 +44,7 @@ header.top {
 }
 .logo { font-family: var(--font-poem); font-style: italic; font-weight: 700; font-size: 28px; margin: 0; letter-spacing: -.3px; }
 .logo b { color: var(--rose); font-weight: 700; }
-.tag { margin: 2px 0 0; color: var(--mute); font-size: 13px; }
+.tag { margin: 2px 0 0; min-height: 1.2em; color: var(--mute); font-size: 13px; }
 
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 .panel h2 { margin: 0; font-size: 17px; }
@@ -100,6 +100,9 @@ input:focus, textarea:focus { border-color: var(--rose); }
 .sect { font-size: 11px; font-weight: 800; letter-spacing: 1px; color: var(--mute); text-transform: uppercase; margin-bottom: 3px; }
 .row { display: flex; gap: 8px; }
 .row .btn { flex: 1; padding: 11px; font-size: 14px; border-radius: 14px; }
+.answer { border-top: 1px dashed var(--line); padding-top: 12px; }
+.answer-text { font-family: var(--font-poem); font-style: italic; font-weight: 700; font-size: 22px; color: var(--mint); margin: 0 0 4px; }
+.reveal { padding: 10px; font-size: 14px; }
 .line-big { font-family: var(--font-poem); font-style: italic; font-size: 21px; line-height: 1.35; margin: 0; color: var(--cream); }
 
 .history { display: flex; flex-direction: column; gap: 8px; }
@@ -109,7 +112,7 @@ input:focus, textarea:focus { border-color: var(--rose); }
 
 .nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
   padding: 10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
   background: rgba(27,16,41,.96); border-top: 1px solid var(--line);
 }
@@ -118,7 +121,7 @@ input:focus, textarea:focus { border-color: var(--rose); }
   background: transparent; border: 0; border-radius: 16px; padding: 7px;
   display: flex; flex-direction: column; align-items: center; gap: 2px; max-width: 260px; width: 100%; justify-self: center;
 }
-.nav .ico { font-family: var(--font-poem); font-style: italic; font-size: 22px; line-height: 1.1; }
+.nav .ico { font-family: var(--font-poem); font-style: italic; font-size: 20px; line-height: 1.1; }
 .nav button[aria-selected="true"] { background: var(--panel); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--rose); }
 .nav button[aria-selected="true"] .ico { color: var(--rose); }
 
@@ -134,7 +137,7 @@ input:focus, textarea:focus { border-color: var(--rose); }
 <div class="wrap">
   <header class="top">
     <p class="logo"><b>Pantun</b> Jualan</p>
-    <p class="tag">Main dengan jiwa dulu, lepas tu bawa ke produk.</p>
+    <p class="tag" id="tagline">Main dengan jiwa dulu, lepas tu bawa ke produk.</p>
   </header>
 
   <!-- ========== TAB PANTUN ========== -->
@@ -150,13 +153,13 @@ input:focus, textarea:focus { border-color: var(--rose); }
         <textarea id="p-notes" rows="2" placeholder="Cth: ketiak berbau, peluh banyak bila panas"></textarea>
       </div>
       <div class="field">
-        <label>Jiwa pantun</label>
+        <label>Luka yang nak disentuh</label>
         <div class="chips" id="p-mood">
-          <button class="chip" type="button" aria-pressed="true">Kecewa</button>
-          <button class="chip" type="button" aria-pressed="false">Rindu</button>
-          <button class="chip" type="button" aria-pressed="false">Cinta</button>
-          <button class="chip" type="button" aria-pressed="false">Sindir</button>
-          <button class="chip" type="button" aria-pressed="false">Kelakar</button>
+          <button class="chip" type="button" aria-pressed="true">Ditinggal tanpa sebab</button>
+          <button class="chip" type="button" aria-pressed="false">Diganti orang lain</button>
+          <button class="chip" type="button" aria-pressed="false">Setia tapi dilupa</button>
+          <button class="chip" type="button" aria-pressed="false">Masih menunggu</button>
+          <button class="chip" type="button" aria-pressed="false">Tak sempat ucap</button>
         </div>
       </div>
       <button id="p-go" class="btn main" type="button" hidden>✦ Karang 3 pantun</button>
@@ -178,7 +181,7 @@ input:focus, textarea:focus { border-color: var(--rose); }
   <section id="tab-pickup" class="tabpage" hidden>
     <div class="panel">
       <h2>Skrip pick up line</h2>
-      <p class="small">Versi awal. Format akan dikemas kini ikut contoh skrip kau.</p>
+      <p class="small">Pembuka ikut tema produk → ajak komen → setup → punchline main kata.</p>
       <div class="field">
         <label for="u-product">Tajuk produk</label>
         <input id="u-product" placeholder="Cth: Perfume Oud Malam 30ml" autocomplete="off">
@@ -187,11 +190,31 @@ input:focus, textarea:focus { border-color: var(--rose); }
         <label for="u-notes">Masalah yang produk selesaikan (pilihan)</label>
         <textarea id="u-notes" rows="2" placeholder="Cth: bau badan tak tahan lama"></textarea>
       </div>
-      <button id="u-go" class="btn main" type="button" hidden>✦ Karang 5 pick up line</button>
+      <button id="u-go" class="btn main" type="button" hidden>✦ Karang 3 pick up line</button>
       <a id="u-open" class="btn alt" href="https://claude.ai/new" target="_blank" rel="noopener">Buka dalam Claude</a>
       <p class="status" id="u-status" hidden></p>
     </div>
     <div class="results" id="u-results"></div>
+  </section>
+
+  <!-- ========== TAB TEKA-TEKI ========== -->
+  <section id="tab-teka" class="tabpage" hidden>
+    <div class="panel">
+      <h2>Skrip teka-teki</h2>
+      <p class="small">Soalan santai → jawapan main kata → bawa ke produk.</p>
+      <div class="field">
+        <label for="t-product">Tajuk produk</label>
+        <input id="t-product" placeholder="Cth: Mesin Durian Elektrik" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="t-notes">Info tambahan (pilihan)</label>
+        <textarea id="t-notes" rows="2" placeholder="Cth: sesuai untuk kedai buah, jimat masa buka durian"></textarea>
+      </div>
+      <button id="t-go" class="btn main" type="button" hidden>✦ Karang 5 teka-teki</button>
+      <a id="t-open" class="btn alt" href="https://claude.ai/new" target="_blank" rel="noopener">Buka dalam Claude</a>
+      <p class="status" id="t-status" hidden></p>
+    </div>
+    <div class="results" id="t-results"></div>
   </section>
 
   <div class="toast" id="toast"></div>
@@ -200,6 +223,7 @@ input:focus, textarea:focus { border-color: var(--rose); }
 <nav class="nav" role="tablist">
   <button role="tab" aria-selected="true" data-tab="pantun"><span class="ico">Pantun</span>4 kerat + produk</button>
   <button role="tab" aria-selected="false" data-tab="pickup"><span class="ico">Pick up</span>line + produk</button>
+  <button role="tab" aria-selected="false" data-tab="teka"><span class="ico">Teka</span>teki + produk</button>
 </nav>
 
 <script>
@@ -227,22 +251,23 @@ input:focus, textarea:focus { border-color: var(--rose); }
     document.querySelectorAll(".nav button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
     $("#tab-pantun").hidden = b.dataset.tab !== "pantun";
     $("#tab-pickup").hidden = b.dataset.tab !== "pickup";
+    $("#tab-teka").hidden = b.dataset.tab !== "teka";
     store.set("pj_tab", b.dataset.tab); scrollTo({ top: 0 });
   }));
-  if (store.get("pj_tab", "pantun") === "pickup") document.querySelector('.nav button[data-tab="pickup"]').click();
+  const startTab = store.get("pj_tab", "pantun");
+  if (startTab !== "pantun") document.querySelector(`.nav button[data-tab="${startTab}"]`)?.click();
 
   /* ---------- jiwa ---------- */
   const moods = [...document.querySelectorAll("#p-mood .chip")];
-  const savedMood = store.get("pj_mood", "Kecewa");
+  const savedMood = store.get("pj_luka", "Ditinggal tanpa sebab");
   moods.forEach((c) => c.setAttribute("aria-pressed", String(c.textContent === savedMood)));
   moods.forEach((c) => c.addEventListener("click", () => {
-    moods.forEach((x) => x.setAttribute("aria-pressed", String(x === c))); store.set("pj_mood", c.textContent);
+    moods.forEach((x) => x.setAttribute("aria-pressed", String(x === c))); store.set("pj_luka", c.textContent);
   }));
   const mood = () => (moods.find((c) => c.getAttribute("aria-pressed") === "true") || moods[0]).textContent;
 
   /* ---------- prompt ---------- */
   const EXAMPLE = `CONTOH (produk: deodoran Haiger)
-Tajuk: Tanpa bilang, padahal engkau
 Pantun:
 Kalau ada sumur di ladang,
 Boleh kita menumpang mandi.
@@ -251,17 +276,16 @@ Padahal engkau yang seakan tidak lagi sudi.
 Jambatan: Mungkin selama ini dia tidak sudi terhadap anda kerana ketiak anda berbau.
 CTA: Oleh itu anda disarankan untuk menggunakan deodoran Haiger ini.`;
 
-  function pantunPrompt(product, notes, jiwa) {
+  function pantunPrompt(product, notes, luka) {
     return `Kau penulis pantun Melayu dan copywriter TikTok Affiliate Malaysia. Tulis 3 skrip pantun jualan untuk produk di bawah. Setiap skrip ikut struktur contoh:
 
-1. tajuk: frasa pendek 3-6 perkataan yang menyentuh jiwa, diambil dari maksud pantun (macam "Tanpa bilang, padahal engkau").
-2. pantun 4 kerat:
+1. pantun 4 kerat:
    - baris 1-2 = pembayang: gambaran alam/kehidupan kampung, TIADA kaitan langsung dengan produk.
-   - baris 3-4 = maksud: luahan jiwa bertema "${jiwa}" (cinta, hubungan, perasaan) — JANGAN sebut produk dalam pantun.
+   - baris 3-4 = maksud: suara ORANG YANG DITINGGALKAN, sudut luka: "${luka}". Mesti DEEP dan kena pada diri pendengar — perasaan sebenar yang ramai pernah rasa tapi tak terluah (setia tapi tak dihargai, menunggu orang yang dah tak kembali, dipersalahkan padahal dia yang pergi). Guna kata-kata mudah tapi tajam, spesifik, bukan klise jiwang kosong. Jangan sebut produk dalam pantun.
    - rima WAJIB a-b-a-b: bunyi hujung baris 1 = baris 3, bunyi hujung baris 2 = baris 4.
-   - setiap baris lebih kurang 8-12 suku kata, bahasa Melayu yang sedap dibaca.
-3. jambatan: satu ayat yang memusingkan emosi pantun kepada masalah yang produk selesaikan, separuh serius separuh lucu (gaya "Mungkin selama ini dia ... kerana ..."). Variasikan pembuka ayat antara skrip.
-4. cta: ajakan guna produk (gaya "Oleh itu anda disarankan untuk menggunakan [produk] ini."). Variasikan sedikit antara skrip.
+   - setiap baris lebih kurang 8-12 suku kata, bahasa Melayu yang sedap dibaca dengan suara perlahan.
+2. jambatan: satu ayat yang tiba-tiba memusingkan emosi pantun kepada masalah yang produk selesaikan, separuh serius separuh lucu (gaya "Mungkin selama ini dia ... kerana ..."). Variasikan pembuka ayat antara skrip.
+3. cta: ajakan guna produk (gaya "Oleh itu anda disarankan untuk menggunakan [produk] ini."). Variasikan sedikit antara skrip.
 
 Ketiga-tiga skrip mesti guna pembayang dan maksud yang berbeza. Jangan buat dakwaan palsu tentang produk.
 
@@ -271,18 +295,60 @@ PRODUK: ${product}
 MASALAH YANG PRODUK SELESAIKAN: ${notes || "(tentukan sendiri ikut produk)"}
 
 Balas JSON sahaja dalam bentuk:
-{"skrip":[{"tajuk":"...","pembayang":["baris 1","baris 2"],"maksud":["baris 3","baris 4"],"jambatan":"...","cta":"..."}]}`;
+{"skrip":[{"pembayang":["baris 1","baris 2"],"maksud":["baris 3","baris 4"],"jambatan":"...","cta":"..."}]}`;
   }
 
+  const PICKUP_EXAMPLE = `CONTOH (produk: mesin durian)
+Pembuka: Ada pula yang minta dekat saya, "Bang, buatlah pickup line pakai buah pula bang, kita nak dengar." Okey, boleh, saya cuba ya.
+Ajak komen: Saya nak korang komen dekat dalam video ni buah apa yang korang tak suka dan kenapa. Saya mula dulu ya.
+Setup: Sebab saya suka buah yang rasa dia manis-manis, jadi saya tak suka buah pelam. Sebab korang pun tahulah pelam tu dia rasa masam sikit kan.
+Punchline: Tapi saya suka je kalau pelam tu... pelamin indah kita berdua.`;
+
   function pickupPrompt(product, notes) {
-    return `Kau copywriter TikTok Affiliate Malaysia. Tulis 5 skrip "pick up line" jualan untuk produk di bawah.
-Setiap skrip: (1) line: satu pick up line bahasa Melayu santai yang manis/kelakar, main dengan perasaan, tak sebut produk; (2) jambatan: satu ayat yang pusingkan pick up line tu kepada masalah yang produk selesaikan; (3) cta: ajakan ringkas guna produk.
-Jangan buat dakwaan palsu tentang produk.
+    return `Kau content creator TikTok Affiliate Malaysia yang pandai buat pickup line main kata (pun). Tulis 3 skrip video pickup line untuk produk di bawah, IKUT STRUKTUR CONTOH:
+
+1. pembuka: kononnya follower minta "buatlah pickup line pakai [tema]" — tema mesti berkait rapat dengan produk atau dunia produk (cth mesin durian → buah). Sebut produk/tema secara semula jadi.
+2. ajak_komen: ajak penonton komen [benda dalam tema] apa yang mereka tak suka dan kenapa, kemudian "Saya mula dulu ya."
+3. setup: alasan logik kenapa tak suka satu benda dalam tema itu (sebab rasa/sifat dia), nada santai bersahaja.
+4. punchline: "Tapi saya suka je kalau [benda] tu..." diikuti PUN di mana nama benda itu bunyi macam / jadi permulaan perkataan romantik (cth pelam → pelamin indah kita berdua).
+
+PERATURAN PENTING:
+- Punchline mesti PUN SEBENAR dalam bahasa Melayu: perkataan romantik tu betul-betul bermula atau berbunyi macam nama benda tu. Semak sendiri sebelum tulis; buang yang tak menjadi.
+- Gaya orang dewasa yang bersahaja dan sweet, BUKAN gaya budak-budak atau lawak bodoh.
+- Ketiga-tiga skrip guna benda dan pun yang berbeza.
+- Jangan buat dakwaan palsu tentang produk.
+
+${PICKUP_EXAMPLE}
 
 PRODUK: ${product}
-MASALAH YANG PRODUK SELESAIKAN: ${notes || "(tentukan sendiri ikut produk)"}
+INFO TAMBAHAN: ${notes || "(tiada)"}
 
-Balas JSON sahaja: {"skrip":[{"line":"...","jambatan":"...","cta":"..."}]}`;
+Balas JSON sahaja: {"skrip":[{"pembuka":"...","ajak_komen":"...","setup":"...","punchline":"..."}]}`;
+  }
+
+  /* ---------- teka-teki ---------- */
+  const TEKA_EXAMPLE = `CONTOH teka-teki santai (gaya yang dikehendaki):
+- Selain interview, overview, review, apa view yang ada lagi? Jawapan: I love you.
+- Kenapa bila chat dengan orang Perak kena tunggu lama? Jawapan: Sebab diorang still typing (Taiping).
+- Kalau manusia panjat pokok nampak pemandangan cantik. Kalau kura-kura panjat pokok nampak apa? Jawapan: Nampak benar nipunya.`;
+
+  function tekaPrompt(product, notes) {
+    return `Kau content creator TikTok Affiliate Malaysia yang pandai buat teka-teki santai. Tulis 5 teka-teki untuk video yang promote produk di bawah.
+
+Setiap teka-teki:
+1. soalan: soalan santai yang buat orang tertanya-tanya, bertema dunia produk ini (cara guna, tempat guna, benda berkaitan).
+2. jawapan: jawapan main kata (pun) yang buat orang tersengih, macam contoh — permainan bunyi BM/English, nama tempat Malaysia, atau sebutan.
+3. kenapa_lawak: satu ayat ringkas terangkan pun tu (untuk aku semak).
+4. jambatan: satu ayat yang bawa dari teka-teki ke produk, ajak penonton tengok/beli produk.
+
+PERATURAN: jawapan mesti pun yang betul-betul menjadi bila disebut; gaya orang dewasa santai, bukan budak-budak; 5 teka-teki guna idea berbeza; jangan buat dakwaan palsu tentang produk.
+
+${TEKA_EXAMPLE}
+
+PRODUK: ${product}
+INFO TAMBAHAN: ${notes || "(tiada)"}
+
+Balas JSON sahaja: {"skrip":[{"soalan":"...","jawapan":"...","kenapa_lawak":"...","jambatan":"..."}]}`;
   }
 
   /* ---------- render ---------- */
@@ -293,13 +359,12 @@ Balas JSON sahaja: {"skrip":[{"line":"...","jambatan":"...","cta":"..."}]}`;
     return `<div class="l"><span>${body}</span><span class="mark ${mark}">${mark}</span></div>`;
   }
   function pantunText(s) {
-    return `${s.tajuk}\n\n${s.pembayang[0]}\n${s.pembayang[1]}\n${s.maksud[0]}\n${s.maksud[1]}\n\n${s.jambatan} ${s.cta}`;
+    return `${s.pembayang[0]}\n${s.pembayang[1]}\n${s.maksud[0]}\n${s.maksud[1]}\n\n${s.jambatan} ${s.cta}`;
   }
   function renderPantun(list, product) {
     $("#p-results").innerHTML = list.map((s, i) => `
       <article class="card">
         <span class="no">Skrip ${i + 1}${product ? " · " + esc(product) : ""}</span>
-        <h3>${esc(s.tajuk)}</h3>
         <div class="poem">
           ${poemLine(s.pembayang[0], "rhyme-a", "a")}
           ${poemLine(s.pembayang[1], "rhyme-b", "b")}
@@ -320,29 +385,49 @@ Balas JSON sahaja: {"skrip":[{"line":"...","jambatan":"...","cta":"..."}]}`;
       if (b) { const s = list[+b.dataset.copyPoem]; copy([...s.pembayang, ...s.maksud].join("\n")); }
     };
   }
+  function pickupText(s) { return [s.pembuka, s.ajak_komen, s.setup, s.punchline].join("\n\n"); }
   function renderPickup(list) {
     $("#u-results").innerHTML = list.map((s, i) => `
       <article class="card">
-        <span class="no">Line ${i + 1}</span>
-        <p class="line-big">“${esc(s.line)}”</p>
-        <p class="prose">${esc(s.jambatan)}</p>
-        <p class="prose cta">${esc(s.cta)}</p>
+        <span class="no">Skrip ${i + 1}</span>
+        <div><div class="sect">Pembuka</div><p class="prose">${esc(s.pembuka)}</p></div>
+        <div><div class="sect">Ajak komen</div><p class="prose">${esc(s.ajak_komen)}</p></div>
+        <div><div class="sect">Setup</div><p class="prose">${esc(s.setup)}</p></div>
+        <div><div class="sect">Punchline</div><p class="line-big">${esc(s.punchline)}</p></div>
         <button class="btn main" type="button" data-i="${i}">Copy skrip</button>
       </article>`).join("");
-    $("#u-results").onclick = (e) => {
-      const b = e.target.closest("[data-i]"); if (!b) return;
-      const s = list[+b.dataset.i]; copy(`${s.line}\n\n${s.jambatan} ${s.cta}`);
+    $("#u-results").onclick = (e) => { const b = e.target.closest("[data-i]"); if (b) copy(pickupText(list[+b.dataset.i])); };
+  }
+  function renderTeka(list) {
+    $("#t-results").innerHTML = list.map((s, i) => `
+      <article class="card">
+        <span class="no">Teka-teki ${i + 1}</span>
+        <p class="line-big">${esc(s.soalan)}</p>
+        <button class="btn alt reveal" type="button" data-r="${i}" aria-expanded="false">Tengok jawapan</button>
+        <div class="answer" id="ans-${i}" hidden>
+          <div class="sect">Jawapan</div>
+          <p class="answer-text">${esc(s.jawapan)}</p>
+          ${s.kenapa_lawak ? `<p class="small">${esc(s.kenapa_lawak)}</p>` : ""}
+        </div>
+        <div><div class="sect">Bawa ke produk</div><p class="prose cta">${esc(s.jambatan)}</p></div>
+        <button class="btn main" type="button" data-i="${i}">Copy skrip</button>
+      </article>`).join("");
+    $("#t-results").onclick = (e) => {
+      const r = e.target.closest("[data-r]");
+      if (r) { const a = $("#ans-" + r.dataset.r); a.hidden = !a.hidden; r.setAttribute("aria-expanded", String(!a.hidden)); r.textContent = a.hidden ? "Tengok jawapan" : "Sorok jawapan"; }
+      const b = e.target.closest("[data-i]");
+      if (b) { const s = list[+b.dataset.i]; copy(`${s.soalan}\n\n${s.jawapan}\n\n${s.jambatan}`); }
     };
   }
 
   // Contoh kau sendiri dipapar dulu supaya nampak rupa hasilnya.
-  const SAMPLE = [{ tajuk: "Tanpa bilang, padahal engkau", pembayang: ["Kalau ada sumur di ladang,", "Boleh kita menumpang mandi."], maksud: ["Katamu aku pergi tanpa bilang,", "Padahal engkau yang seakan tidak lagi sudi."], jambatan: "Mungkin selama ini dia tidak sudi terhadap anda kerana ketiak anda berbau.", cta: "Oleh itu anda disarankan untuk menggunakan deodoran Haiger ini." }];
+  const SAMPLE = [{ pembayang: ["Kalau ada sumur di ladang,", "Boleh kita menumpang mandi."], maksud: ["Katamu aku pergi tanpa bilang,", "Padahal engkau yang seakan tidak lagi sudi."], jambatan: "Mungkin selama ini dia tidak sudi terhadap anda kerana ketiak anda berbau.", cta: "Oleh itu anda disarankan untuk menggunakan deodoran Haiger ini." }];
 
   /* ---------- sejarah ---------- */
   function saveHist(entry) { const h = store.get("pj_hist", []); h.unshift(entry); store.set("pj_hist", h.slice(0, 20)); drawHist(); }
   function drawHist() {
     const h = store.get("pj_hist", []);
-    $("#p-history").innerHTML = h.length ? h.map((e) => `<div class="h-item"><span>${esc(e.product)} · ${esc(e.jiwa)}</span><button type="button" data-id="${e.id}">Buka</button></div>`).join("")
+    $("#p-history").innerHTML = h.length ? h.map((e) => `<div class="h-item"><span>${esc(e.product)}${e.jiwa ? " · " + esc(e.jiwa) : ""}</span><button type="button" data-id="${e.id}">Buka</button></div>`).join("")
       : `<p class="small">Pantun yang kau karang akan disimpan kat sini.</p>`;
   }
   $("#p-history").addEventListener("click", (e) => {
@@ -361,7 +446,7 @@ Balas JSON sahaja: {"skrip":[{"line":"...","jambatan":"...","cta":"..."}]}`;
     invalid_json: "Jawapan tak lengkap. Tekan sekali lagi.",
   };
   const samplePromise = window.claude?.use ? window.claude.use("sample").catch(() => null) : Promise.resolve(null);
-  samplePromise.then((s) => { $("#p-go").hidden = !s; $("#u-go").hidden = !s; });
+  samplePromise.then((s) => { $("#p-go").hidden = !s; $("#u-go").hidden = !s; $("#t-go").hidden = !s; });
 
   function wireOpen(linkSel, inputSel, statusSel, makePrompt) {
     $(linkSel).addEventListener("click", (e) => {
@@ -375,6 +460,8 @@ Balas JSON sahaja: {"skrip":[{"line":"...","jambatan":"...","cta":"..."}]}`;
   const uPrompt = () => { const v = $("#u-product").value.trim(); return v && pickupPrompt(v, $("#u-notes").value.trim()); };
   wireOpen("#p-open", "#p-product", "#p-status", pPrompt);
   wireOpen("#u-open", "#u-product", "#u-status", uPrompt);
+  const tPrompt = () => { const v = $("#t-product").value.trim(); return v && tekaPrompt(v, $("#t-notes").value.trim()); };
+  wireOpen("#t-open", "#t-product", "#t-status", tPrompt);
 
   async function run(btn, statusEl, inputEl, prompt, onData) {
     if (!prompt) { status(statusEl, "Letak tajuk produk dulu.", true); inputEl.focus(); return; }
@@ -398,10 +485,26 @@ Balas JSON sahaja: {"skrip":[{"line":"...","jambatan":"...","cta":"..."}]}`;
     });
   });
   $("#u-go").addEventListener("click", () => {
-    run($("#u-go"), $("#u-status"), $("#u-product"), uPrompt(), (list) => { renderPickup(list.filter((s) => s?.line)); $("#u-results").scrollIntoView({ behavior: "smooth" }); });
+    run($("#u-go"), $("#u-status"), $("#u-product"), uPrompt(), (list) => {
+      list = list.filter((s) => s?.punchline);
+      if (!list.length) { status($("#u-status"), ERR.invalid_json, true); return; }
+      renderPickup(list); $("#u-results").scrollIntoView({ behavior: "smooth" });
+    });
+  });
+  $("#t-go").addEventListener("click", () => {
+    run($("#t-go"), $("#t-status"), $("#t-product"), tPrompt(), (list) => {
+      list = list.filter((s) => s?.soalan && s?.jawapan);
+      if (!list.length) { status($("#t-status"), ERR.invalid_json, true); return; }
+      renderTeka(list); $("#t-results").scrollIntoView({ behavior: "smooth" });
+    });
   });
 
   renderPantun(SAMPLE, "Contoh");
+  renderPickup([{ pembuka: "Ada pula yang minta dekat saya, \"Bang, buatlah pickup line pakai buah pula bang, kita nak dengar.\" Okey, boleh, saya cuba ya.", ajak_komen: "Saya nak korang komen dekat dalam video ni buah apa yang korang tak suka dan kenapa. Saya mula dulu ya.", setup: "Sebab saya suka buah yang rasa dia manis-manis, jadi saya tak suka buah pelam. Sebab korang pun tahulah pelam tu dia rasa masam sikit kan.", punchline: "Tapi saya suka je kalau pelam tu... pelamin indah kita berdua." }]);
+  renderTeka([
+    { soalan: "Selain interview, overview, review, apa view yang ada lagi?", jawapan: "I love you.", kenapa_lawak: "", jambatan: "Contoh — tekan Karang untuk teka-teki ikut produk kau." },
+    { soalan: "Kenapa bila chat dengan orang Perak kena tunggu lama?", jawapan: "Sebab diorang still typing.", kenapa_lawak: "Still typing bunyi macam Taiping, Perak.", jambatan: "Contoh — tekan Karang untuk teka-teki ikut produk kau." },
+  ]);
   drawHist();
 })();
 </script>
