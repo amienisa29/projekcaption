@@ -1,10 +1,10 @@
 // Cache fail app supaya buka laju & tetap jalan bila line lemah.
 // Naikkan VERSION setiap kali fail app berubah.
-const VERSION = "v3";
+const VERSION = "v4";
 const CACHE = `hookaffiliate-${VERSION}`;
 const SHELL = [
   "./", "index.html", "style.css", "app.js", "hooks.js", "manifest.webmanifest",
-  "vendor/anthropic-sdk.js", "icons/icon-192.png", "icons/icon-512.png",
+  "icons/icon-192.png", "icons/icon-512.png",
 ];
 
 self.addEventListener("install", (e) => {

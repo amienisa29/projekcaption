@@ -1,4 +1,5 @@
 :root {
+  color-scheme: dark;
   --bg: #15120c;
   --card: rgba(48, 40, 24, 0.55);
   --card-2: #23201b;
@@ -103,6 +104,7 @@ textarea.input { resize: vertical; line-height: 1.45; }
 .btn:disabled { opacity: .55; cursor: wait; }
 .copy { flex: 1; font-size: 12.5px; padding: 9px 6px; }
 .fav { width: 46px; font-size: 18px; padding: 6px 0; }
+.link-btn { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
 .big { width: 100%; padding: 15px; font-size: 16px; border-radius: 999px; margin-top: 18px; }
 .small-btn { margin-top: 10px; font-size: 13px; }
 

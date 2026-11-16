@@ -172,13 +172,19 @@ GAYA KESELURUHAN
 const bpEl = $("#blueprint");
 bpEl.value = store.get("blueprint_v2", DEFAULT_BLUEPRINT);
 bpEl.addEventListener("input", () => store.set("blueprint_v2", bpEl.value));
-$("#bp-reset").addEventListener("click", () => {
-  if (!confirm("Reset blueprint ke versi asal?")) return;
+// Tekan dua kali untuk sahkan (confirm() tak jalan dalam claude.ai)
+$("#bp-reset").addEventListener("click", (e) => {
+  const b = e.currentTarget;
+  if (!b.dataset.armed) {
+    b.dataset.armed = "1"; b.textContent = "Tekan sekali lagi untuk reset";
+    setTimeout(() => { delete b.dataset.armed; b.textContent = "Reset ke blueprint asal"; }, 3000);
+    return;
+  }
+  delete b.dataset.armed; b.textContent = "Reset ke blueprint asal";
   bpEl.value = DEFAULT_BLUEPRINT; store.set("blueprint_v2", DEFAULT_BLUEPRINT);
+  toast("Blueprint dah reset");
 });
 
-$("#apikey").value = store.get("apikey", "");
-$("#save-key").addEventListener("click", () => { store.set("apikey", $("#apikey").value.trim()); toast("🔑 Key disimpan"); });
 
 function setStatus(msg, isErr = false) {
   const s = $("#status");
@@ -188,11 +194,11 @@ function setStatus(msg, isErr = false) {
 }
 
 const SYSTEM_PROMPT = `Kau ialah pakar content TikTok Affiliate Malaysia dan copywriter video pendek.
-Tugas kau: (1) buat research ringkas tentang produk guna web search — apa produk tu, fungsi, kelebihan, bahan/spec, harga anggaran di Malaysia (TikTok Shop/Shopee), review orang, dan pain point pembeli; (2) tulis storyboard dan skrip video TikTok yang IKUT STRUKTUR BLUEPRINT yang diberi, babak demi babak.
+Tugas kau: (1) buat research ringkas tentang produk berdasarkan pengetahuan kau dan info yang diberi — apa produk tu, fungsi, kelebihan, bahan/spec, harga anggaran di Malaysia (TikTok Shop/Shopee), review orang, dan pain point pembeli; (2) tulis storyboard dan skrip video TikTok yang IKUT STRUKTUR BLUEPRINT yang diberi, babak demi babak.
 
 Peraturan penulisan:
 - Bahasa Melayu santai gaya Malaysia (boleh campur sikit English macam orang Malaysia cakap), ayat pendek, senang disebut depan kamera.
-- Jangan buat dakwaan palsu atau melampau (contoh dakwaan perubatan "menyembuhkan"). Guna fakta dari research; kalau tak pasti, tulis secara umum.
+- Jangan buat dakwaan palsu atau melampau (contoh dakwaan perubatan "menyembuhkan"). Kalau tak pasti sesuatu fakta/spec/harga, jangan reka — tulis secara umum atau "semak di halaman produk", dan utamakan info yang aku bagi.
 - Setiap babak: masa, visual/shot (apa nak rakam), skrip voiceover (apa nak cakap), teks atas skrin, dan nota ringkas (props/transition/tips).
 - Jumlah masa babak mesti padan dengan durasi video yang diminta. Kalau durasi lain dari blueprint, kekalkan susunan babak dan skala masa ikut nisbah.
 - Ikut GAYA KESELURUHAN dalam blueprint (jenis shot, caption, motion graphic) bila tulis visual & nota.
@@ -200,7 +206,7 @@ Peraturan penulisan:
 - Panjang skrip voiceover lebih kurang 2.5 patah perkataan sesaat supaya muat dengan durasi.
 - Bahagian "teks_skrin" = angka/spec atau overlay grafik (cth "10,000mAh", "20% → 90%"), bukan caption perkataan.
 
-Selepas research, jawapan AKHIR kau mesti JSON sahaja (tiada teks lain, tiada markdown fence), ikut bentuk ini:
+Jawapan kau mesti JSON sahaja (tiada teks lain, tiada markdown fence), ikut bentuk ini:
 {
   "produk": "nama produk",
   "research": {
@@ -219,39 +225,8 @@ Selepas research, jawapan AKHIR kau mesti JSON sahaja (tiada teks lain, tiada ma
   "hashtag": ["#tanpa", "#space"]
 }`;
 
-let Anthropic = null;
-async function getClient(apiKey) {
-  if (!Anthropic) {
-    // SDK rasmi @anthropic-ai/sdk@1.2.0, di-bundle untuk browser (lihat vendor/README.md)
-    Anthropic = (await import("./vendor/anthropic-sdk.js")).default;
-  }
-  return new Anthropic({ apiKey, dangerouslyAllowBrowser: true });
-}
-
-function extractJson(text) {
-  const start = text.indexOf("{");
-  const end = text.lastIndexOf("}");
-  if (start < 0 || end <= start) return null;
-  try { return JSON.parse(text.slice(start, end + 1)); } catch { return null; }
-}
-
-async function generate() {
-  const product = $("#product").value.trim();
-  if (!product) { setStatus("Letak tajuk produk dulu.", true); $("#product").focus(); return; }
-  const apiKey = ($("#apikey").value || store.get("apikey", "")).trim();
-  if (!apiKey) {
-    setStatus("Masukkan Anthropic API key dalam ⚙️ Tetapan API (bawah).", true);
-    document.querySelector("#apikey").closest("details").open = true;
-    return;
-  }
-  store.set("apikey", apiKey);
-
-  const btn = $("#generate");
-  btn.disabled = true;
-  $("#result").classList.add("hidden");
-  setStatus("🔎 Tengah research produk...");
-
-  const userMsg = `Tajuk produk: ${product}
+function buildUserMsg() {
+  return `Tajuk produk: ${$("#product").value.trim()}
 Info tambahan dari aku: ${$("#notes").value.trim() || "(tiada)"}
 Durasi video: ${$("#duration").value}
 Gaya bahasa: ${$("#tone").value}
@@ -260,57 +235,89 @@ BLUEPRINT VIDEO (ikut struktur ni):
 """
 ${bpEl.value.trim()}
 """`;
+}
 
-  const sources = new Map();
+// Prompt untuk dibuka dalam app Claude (ada web search, guna langganan kau).
+function buildChatPrompt() {
+  return `Kau pakar content TikTok Affiliate Malaysia. Guna web search untuk research produk ni dulu (fungsi, spec, kelebihan, harga di TikTok Shop/Shopee Malaysia, review, pain point pembeli). Lepas tu tulis storyboard & skrip video TikTok yang IKUT STRUKTUR BLUEPRINT di bawah, babak demi babak.
+
+Format jawapan:
+1. Ringkasan research (ringkas, dengan sumber)
+2. 3-5 pilihan hook
+3. Storyboard: setiap babak ada masa, visual/shot, skrip voiceover, teks atas skrin, nota
+4. Skrip penuh (voiceover dari awal sampai akhir)
+5. Caption + hashtag
+
+Bahasa Melayu santai gaya Malaysia, ayat pendek. Jangan buat dakwaan palsu. Contoh ayat dalam blueprint cuma rujukan formula — tulis ayat baru untuk produk ni.
+
+${buildUserMsg()}`;
+}
+
+$("#open-claude").addEventListener("click", async (e) => {
+  if (!$("#product").value.trim()) {
+    e.preventDefault(); setStatus("Letak tajuk produk dulu.", true); $("#product").focus(); return;
+  }
+  const prompt = buildChatPrompt();
+  e.currentTarget.href = "https://claude.ai/new?q=" + encodeURIComponent(prompt);
+  try { await navigator.clipboard.writeText(prompt); toast("✅ Prompt dah copy"); } catch { /* link tetap jalan */ }
+});
+
+// Dalam claude.ai, app boleh tanya Claude terus guna akaun kau.
+let samplePromise = null;
+function getSample() {
+  if (!samplePromise) samplePromise = window.claude?.use ? window.claude.use("sample").catch(() => null) : Promise.resolve(null);
+  return samplePromise;
+}
+getSample().then((sample) => {
+  $("#generate").classList.toggle("hidden", !sample);
+  $("#gen-note").classList.toggle("hidden", !sample);
+  $("#open-claude").classList.toggle("gold", !sample);
+  $("#open-claude").classList.toggle("ghost", !!sample);
+});
+
+const ERR_COPY = {
+  not_granted: "Kau tak benarkan app ni guna Claude. Guna butang \"Buka dalam Claude\" kat bawah.",
+  sampling_disabled: "Claude tak tersedia untuk akaun ni. Guna butang \"Buka dalam Claude\".",
+  rate_limited: "Had penggunaan Claude dah sampai. Cuba lagi kejap lagi.",
+  session_expired: "Sesi tamat. Log masuk claude.ai semula.",
+  refused: "Claude tak dapat buat permintaan ni. Cuba tukar tajuk/info produk.",
+  invalid_json: "Jawapan tak lengkap. Tekan jana sekali lagi.",
+};
+
+let genCtl = null;
+$("#stop").addEventListener("click", () => genCtl?.abort());
+
+async function generate() {
+  const product = $("#product").value.trim();
+  if (!product) { setStatus("Letak tajuk produk dulu.", true); $("#product").focus(); return; }
+  const sample = await getSample();
+  if (!sample) { setStatus("Fungsi ni hanya jalan bila app dibuka dalam claude.ai.", true); return; }
+
+  const btn = $("#generate");
+  btn.disabled = true;
+  $("#stop").classList.remove("hidden");
+  $("#result").classList.add("hidden");
+  setStatus("🧠 Claude tengah fikir (boleh ambil 1–2 minit)...");
+  genCtl = new AbortController();
   try {
-    const client = await getClient(apiKey);
-    const messages = [{ role: "user", content: userMsg }];
-    let final;
-    // Web search boleh pause turn yang panjang — sambung sampai siap.
-    for (let i = 0; i < 5; i++) {
-      const stream = client.beta.messages.stream({
-        model: "claude-opus-5-5",
-        max_tokens: 64000,
-        thinking: { type: "adaptive" },
-        output_config: { effort: "medium" },
-        betas: ["server-side-fallback-2026-07-01"],
-        fallbacks: "default",
-        system: SYSTEM_PROMPT,
-        tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 6 }],
-        messages,
-      });
-      stream.on("streamEvent", (ev) => {
-        if (ev.type === "content_block_start") {
-          const t = ev.content_block.type;
-          if (t === "server_tool_use") setStatus("🔎 Tengah cari maklumat produk di web...");
-          else if (t === "text") setStatus("✍️ Tengah tulis storyboard & skrip...");
-        }
-      });
-      final = await stream.finalMessage();
-      for (const block of final.content) {
-        if (block.type === "web_search_tool_result" && Array.isArray(block.content)) {
-          for (const r of block.content) if (r.url) sources.set(r.url, r.title || r.url);
-        }
-      }
-      if (final.stop_reason !== "pause_turn") break;
-      messages.push({ role: "assistant", content: final.content });
-    }
-
-    if (final.stop_reason === "refusal") throw new Error("Permintaan ditolak oleh model. Cuba tukar tajuk/info produk.");
-    const text = final.content.filter((b) => b.type === "text").map((b) => b.text).join("");
-    const data = extractJson(text);
-    const entry = { id: Date.now(), product, data, raw: data ? "" : text, sources: [...sources].slice(0, 8) };
+    const data = await sample.json(`${SYSTEM_PROMPT}\n\n---\n\n${buildUserMsg()}`, {
+      modelTier: "complex",
+      cache: false,
+      signal: genCtl.signal,
+      onText: () => setStatus("✍️ Tengah tulis storyboard & skrip..."),
+    });
+    if (!data || !Array.isArray(data.storyboard)) throw { code: "invalid_json" };
+    const entry = { id: Date.now(), product, data, raw: "", sources: [] };
     saveHistory(entry);
     renderResult(entry);
-    setStatus(final.stop_reason === "max_tokens" ? "⚠️ Jawapan terpotong — cuba jana semula." : "");
+    setStatus("");
   } catch (err) {
-    console.error(err);
-    const msg = err?.status === 401 ? "API key tak sah. Semak semula key kau."
-      : err?.status === 429 ? "Terlalu banyak request / had kredit. Cuba lagi sekejap."
-      : `Ralat: ${err?.message || err}`;
-    setStatus(msg, true);
+    if (err?.code === "cancelled") setStatus("Dihentikan.");
+    else setStatus(ERR_COPY[err?.code] || "Ada masalah sambungan. Cuba tekan jana sekali lagi.", true);
   } finally {
     btn.disabled = false;
+    $("#stop").classList.add("hidden");
+    genCtl = null;
   }
 }
 $("#generate").addEventListener("click", generate);
@@ -416,19 +423,20 @@ $("#history").addEventListener("click", (ev) => {
 renderHistory();
 
 /* ---------- pasang ke home screen (PWA) ---------- */
+const installBtn = $("#install"); // tiada dalam versi claude.ai
 let deferredInstall = null;
 const isStandalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone;
-if (!isStandalone) $("#install").classList.remove("hidden");
+if (installBtn && !isStandalone) installBtn.classList.remove("hidden");
 addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); deferredInstall = e; });
-$("#install").addEventListener("click", async () => {
+installBtn?.addEventListener("click", async () => {
   if (deferredInstall) {
     deferredInstall.prompt();
     const { outcome } = await deferredInstall.userChoice;
     deferredInstall = null;
-    if (outcome === "accepted") $("#install").classList.add("hidden");
+    if (outcome === "accepted") installBtn.classList.add("hidden");
   } else {
     $("#install-help").classList.remove("hidden");
   }
 });
 $("#install-help-close").addEventListener("click", () => $("#install-help").classList.add("hidden"));
-addEventListener("appinstalled", () => { $("#install").classList.add("hidden"); toast("✅ App dah dipasang!"); });
+addEventListener("appinstalled", () => { installBtn?.classList.add("hidden"); toast("✅ App dah dipasang!"); });
